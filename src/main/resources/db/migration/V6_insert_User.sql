@@ -1,0 +1,1 @@
+insert into usuarios(username,primernombre,segundonombre,primerapellido,segundoapellido,password,documento,activo,correo) values("ajimenez","ANDRES","FERNANDO","JIMENEZ","CASTRO","$2a$10$7pX1D.N7C2Fp5O6hYvOaKuF.B1nQW/I/p.IuV9R6f1X5l8g3e2r1a","1088316591",1,"andresfernando.094@gmail.com");
