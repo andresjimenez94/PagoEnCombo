@@ -3,6 +3,7 @@ package com.pagoEnCombo.persistence;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,6 +14,7 @@ import com.pagoEnCombo.persistence.entity.PagoEnCombo;
 import com.pagoEnCombo.persistence.entity.PagoEnComboResponse;
 import com.pagoEnCombo.persistence.entity.RestTemplateConfig;
 import com.pagoEnCombo.persistence.entity.Usuario;
+import com.pagoEnCombo.persistence.entity.GeminiService;
 
 import java.util.Map;
 import java.util.List;
@@ -29,12 +31,8 @@ public class PagoEnComboRepository {
     @Autowired
     private RestTemplate restTemplate;
 
-    // 1. Define la URL con tu API Key de Google Gemini
-    // Cambiamos a gemini-pro que suele estar habilitado por defecto
-    // Cambiamos v1beta por v1 y nos aseguramos de que el nombre del modelo sea el base
-    // Muchos proyectos nuevos están requiriendo la versión completa del nombre para evitar el 404
-    // Opción Recomendada: Gemini 2.5 Flash-Lite (la más estable y rápida según tu JSON)
-    private final String urlApi = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=AIzaSyDxHCRN3q2SnRAqub26sF0YGwcdydVJiu0";
+    @Autowired
+    private GeminiService geminiService;
 
     public PagoEnCombo CapturarFactura(PagoEnCombo pagoEnCombo) {
 
@@ -43,8 +41,11 @@ public class PagoEnComboRepository {
     }
 
     public PagoEnComboResponse analizarConIA(String base64Limpio) {
-        // 1. Definir el "System Instruction" o Prompt
-        // Es vital pedirle que no incluya texto extra, solo el objeto JSON.
+        
+        String urlApi = geminiService.getUrlApi();
+
+        System.out.println("DEBUG - URL GENERADA: " + urlApi);
+
         String prompt = "Analiza la imagen de esta factura. Extrae los productos, sus precios y el total. " +
                 "Responde estrictamente en formato JSON con la siguiente estructura: " +
                 "{ \"items\": [ { \"producto\": \"nombre\", \"precio\": 0.0 } ], \"montoTotal\": 0.0 }";
@@ -61,9 +62,7 @@ public class PagoEnComboRepository {
                                         "data", base64Limpio))))));
 
         try {
-            // 3. Realizar la llamada a la API
-            // 'urlApi' debe incluir tu API Key:
-            // https://.../models/gemini-1.5-flash:generateContent?key=TU_KEY
+            
             System.out.println("Enviando petición a: " + urlApi);
             ResponseEntity<String> response = restTemplate.postForEntity(urlApi, requestBody, String.class);
 
