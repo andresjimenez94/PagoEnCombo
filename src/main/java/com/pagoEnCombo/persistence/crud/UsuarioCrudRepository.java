@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UsuarioCrudRepository extends JpaRepository<Usuario,Integer>{
+public interface UsuarioCrudRepository extends JpaRepository<Usuario,String>{
 
     //No se coloca el nombre de la tabla sino el de la entidad por eso es "Usuaio" y no "usuarios"
     @Query("SELECT u FROM Usuario u WHERE u.userName = ?1 AND u.password = ?2")

@@ -33,6 +33,7 @@ public class SecurityConfig {
         return http
             .authorizeHttpRequests((requests) -> 
                 requests
+                    .requestMatchers("/api/pagoencombo/procesar/**").permitAll()
                     .requestMatchers("/api/usuario/authenticate").permitAll()
                     .requestMatchers("/api/version").permitAll()
                     .anyRequest().authenticated()//Debe estar activo

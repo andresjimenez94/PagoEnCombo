@@ -34,6 +34,10 @@ public class Cuenta {
 
     @Column(name = "fecha_activacion")
     private LocalDateTime activacion;
+    @PrePersist
+    public void asignarFecha() {
+        this.activacion = LocalDateTime.now();
+    }
     public LocalDateTime getActivacion() {
         return activacion;
     }
