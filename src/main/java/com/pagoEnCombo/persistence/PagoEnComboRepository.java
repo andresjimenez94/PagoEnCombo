@@ -113,6 +113,9 @@ public class PagoEnComboRepository {
         // 4. Guardar en la tabla 'pagosencombo'
         pagoEnComboCrudRepository.save(entidad);
 
+        datosIA.setId(entidad.getId());
+        datosIA.setFechaProceso(entidad.getFecha());
+
         return datosIA;
     }
 

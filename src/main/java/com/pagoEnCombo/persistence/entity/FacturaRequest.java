@@ -1,10 +1,20 @@
 package com.pagoEnCombo.persistence.entity;
 
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class FacturaRequest {
     
     // Atributo privado para cumplir con el encapsulamiento
     private String imagenBase64;
     private String username;
+    private Long id;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonProperty("fechaProceso")
+    private LocalDateTime fechaProceso;
 
     // --- Constructor ---
     public FacturaRequest() {
@@ -25,5 +35,21 @@ public class FacturaRequest {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setFechaProceso(LocalDateTime fechaProceso) {
+        this.fechaProceso = fechaProceso;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public LocalDateTime getFechaProceso() {
+        return fechaProceso;
     }
 }

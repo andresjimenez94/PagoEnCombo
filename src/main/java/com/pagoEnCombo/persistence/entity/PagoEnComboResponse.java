@@ -1,10 +1,11 @@
 package com.pagoEnCombo.persistence.entity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class PagoEnComboResponse {
     private Long id; // El consecutivo generado por MySQL
-    private String fechaProceso; // Fecha formateada para el usuario
+    private LocalDateTime fechaProceso; // Fecha formateada para el usuario
     private List<ItemFactura> items; // Desglose de productos
     private Double montoTotal; // El total detectado por la IA
 
@@ -18,11 +19,11 @@ public class PagoEnComboResponse {
         this.id = id;
     }
 
-    public String getFechaProceso() {
+    public LocalDateTime getFechaProceso() {
         return fechaProceso;
     }
 
-    public void setFechaProceso(String fechaProceso) {
+    public void setFechaProceso(LocalDateTime fechaProceso) {
         this.fechaProceso = fechaProceso;
     }
 
