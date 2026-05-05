@@ -49,8 +49,18 @@ public class PagoEnComboResponse {
 
     // Clase interna para el desglose
     public static class ItemFactura {
+        private int indice;
         private String producto;
         private Double precio;
+        private boolean check;
+
+        public int getIndice() {
+            return indice;
+        }
+
+        public void setIndice(int indice) {
+            this.indice = indice;
+        }
 
         public String getProducto() {
             return producto;
@@ -66,6 +76,14 @@ public class PagoEnComboResponse {
 
         public void setPrecio(Double precio) {
             this.precio = precio;
+        }
+
+        public boolean isCheck() {
+            return check;
+        }
+
+        public void setCheck(boolean check) {
+            this.check = check;
         }
     }
 }

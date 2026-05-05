@@ -50,6 +50,13 @@ public class UsuarioRepository {
         return usuarioCrudRepository.save(usuario);  
     }
 
+     public Usuario adicionarUsuarioANDCuenta(Usuario usuario){
+
+        String contraseñaEncriptada = passwordEncoder.encode(usuario.getPassword());
+        usuario.setPassword(contraseñaEncriptada);
+        return usuarioCrudRepository.save(usuario);  
+    }
+
     public Integer actualizarUsuario(Usuario usuario){
         String contraseñaEncriptada = passwordEncoder.encode(usuario.getPassword());
         usuario.setPassword(contraseñaEncriptada);

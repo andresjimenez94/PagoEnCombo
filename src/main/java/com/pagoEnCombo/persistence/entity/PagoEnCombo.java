@@ -29,6 +29,9 @@ public class PagoEnCombo {
     @Column(name = "monto_total")
     private Double monto;
 
+    @Column(name = "aportes")
+    private Double aportes = 0.00;
+
     // Relación: Muchos pagos pertenecen a un solo usuario
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "username", nullable = false) // FK hacia la tabla Usuario
@@ -79,6 +82,14 @@ public class PagoEnCombo {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public Double getAportes() {
+        return aportes;
+    }
+
+    public void setAportes(Double aportes) {
+        this.aportes = aportes;
     }
 
     @PrePersist

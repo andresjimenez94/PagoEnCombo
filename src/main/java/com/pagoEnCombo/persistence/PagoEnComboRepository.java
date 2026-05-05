@@ -50,9 +50,16 @@ public class PagoEnComboRepository {
 
         System.out.println("DEBUG - URL GENERADA: " + urlApi);
 
-        String prompt = "Analiza la imagen de esta factura. Extrae los productos, sus precios y el total. " +
+        //String prompt = "Analiza la imagen de esta factura. Extrae los productos, sus precios y el total. " +
+        //        "Responde estrictamente en formato JSON con la siguiente estructura: " +
+        //        "{ \"items\": [ { \"producto\": \"nombre\", \"precio\": 0.0 } ], \"montoTotal\": 0.0 }";
+
+        String prompt = "Analiza la imagen de esta factura. Extrae los productos, sus precios unitarios y el total. " +
+                "REGLA CRÍTICA: Si un producto tiene una cantidad mayor a 1, debes incluirlo en la lista de 'items' " +
+                "tantas veces como indique su cantidad (ejemplo: si hay 3 unidades de 'Producto A', que tenga un contador "+
+                "el cual inicia en 1 y va incrementado de 1 en 1 y un atributo check con false, el ítem debe aparecer 3 veces). " +
                 "Responde estrictamente en formato JSON con la siguiente estructura: " +
-                "{ \"items\": [ { \"producto\": \"nombre\", \"precio\": 0.0 } ], \"montoTotal\": 0.0 }";
+                "{ \"items\": [ { \"indice\":contador,\"producto\": \"nombre\", \"precio\": 0.0, \"check\": false } ], \"montoTotal\": 0.0 }";
 
         // 2. Construir el cuerpo de la petición (Payload)
         // El modelo espera un arreglo de 'parts': una con el texto y otra con la
@@ -73,6 +80,8 @@ public class PagoEnComboRepository {
             // 4. Procesar la respuesta
             // La IA devuelve un JSON complejo, debemos extraer el texto de la respuesta y
             // convertirlo a nuestro DTO
+
+            System.out.println("DEBUG - Respuesta IA: " + response);
             return parsearRespuestaIA(response.getBody());
 
         } catch (Exception e) {
