@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pagoEnCombo.persistence.crud.PagoEnComboCrudRepository;
@@ -34,6 +35,9 @@ public class PagoEnComboRepository {
     @Autowired
     private GeminiService geminiService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     public PagoEnCombo CapturarFactura(PagoEnCombo pagoEnCombo) {
 
         return pagoEnComboCrudRepository.save(pagoEnCombo);
@@ -41,7 +45,7 @@ public class PagoEnComboRepository {
     }
 
     public PagoEnComboResponse analizarConIA(String base64Limpio) {
-        
+
         String urlApi = geminiService.getUrlApi();
 
         System.out.println("DEBUG - URL GENERADA: " + urlApi);
@@ -62,7 +66,7 @@ public class PagoEnComboRepository {
                                         "data", base64Limpio))))));
 
         try {
-            
+
             System.out.println("Enviando petición a: " + urlApi);
             ResponseEntity<String> response = restTemplate.postForEntity(urlApi, requestBody, String.class);
 
@@ -100,22 +104,39 @@ public class PagoEnComboRepository {
 
         // 2. Buscar al Usuario en la DB
         Usuario usuario = usuarioCrudRepository.findById(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado en Pereira"));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         // 3. Crear y Capturar la Entidad para MySQL
         PagoEnCombo entidad = new PagoEnCombo();
         entidad.setImagenBase64(base64);
-        entidad.setJsonRespuesta(datosIA.toString()); // Guardamos el JSON completo
+        datosIA.setId(entidad.getId());
+        datosIA.setFechaProceso(entidad.getFecha());
+        try {
+            // Esto convierte el objeto en un JSON verdadero: {"monto": 175000, ...}
+            String jsonString = objectMapper.writeValueAsString(datosIA);
+            entidad.setJsonRespuesta(jsonString);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            // Maneja el error si la conversión falla
+        }
         entidad.setMonto(datosIA.getMontoTotal());
         entidad.setUsuario(usuario); // Aquí vinculamos el username (FK)
 
         // 4. Guardar en la tabla 'pagosencombo'
         pagoEnComboCrudRepository.save(entidad);
 
-        datosIA.setId(entidad.getId());
-        datosIA.setFechaProceso(entidad.getFecha());
+        
 
         return datosIA;
+    }
+
+    public List<PagoEnCombo> findByUsuario(String username) {
+
+        Usuario usuario = usuarioCrudRepository.findById(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        return pagoEnComboCrudRepository.findByUsuario(usuario);
+
     }
 
 }

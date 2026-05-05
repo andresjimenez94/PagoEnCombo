@@ -3,8 +3,12 @@ package com.pagoEnCombo.persistence.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class PagoEnComboResponse {
+    @JsonIgnore
     private Long id; // El consecutivo generado por MySQL
+    @JsonIgnore
     private LocalDateTime fechaProceso; // Fecha formateada para el usuario
     private List<ItemFactura> items; // Desglose de productos
     private Double montoTotal; // El total detectado por la IA

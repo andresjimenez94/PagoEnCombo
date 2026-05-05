@@ -3,6 +3,9 @@ package com.pagoEnCombo.persistence.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonRawValue;
+
 @Entity
 @Table(name = "pagosencombo")
 public class PagoEnCombo {
@@ -11,11 +14,13 @@ public class PagoEnCombo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
+    @JsonIgnore
     @Column(name = "imagen_base64", columnDefinition = "CLOB")
     private String imagenBase64;
 
+    @Lob
     @Column(name = "json_respuesta", columnDefinition = "CLOB")
+    @JsonRawValue
     private String jsonRespuesta;
 
     @Column(name = "fecha_proceso", updatable = false)
@@ -27,6 +32,7 @@ public class PagoEnCombo {
     // Relación: Muchos pagos pertenecen a un solo usuario
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "username", nullable = false) // FK hacia la tabla Usuario
+    @JsonIgnore
     private Usuario usuario;
 
     // --- Encapsulamiento ---
