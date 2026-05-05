@@ -29,9 +29,9 @@ public class CuentaController {
 
 
     @PostMapping("/adicionarcuenta")
-    public ResponseEntity<Object> addCuenta(@RequestBody Cuenta cuenta) {
+    public ResponseEntity<Object> addCuenta(@RequestBody Usuario usuario) {
 
-        Cuenta cuent = cuentaRepository.adicionarCuenta(cuenta);
+        Cuenta cuent = cuentaRepository.adicionarCuenta(usuario);
 
         mensajes = new Mensajes();
         if (!cuent.equals(null)) {

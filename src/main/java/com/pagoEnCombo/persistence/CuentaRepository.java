@@ -17,16 +17,18 @@ public class CuentaRepository {
     @Autowired
     private UsuarioCrudRepository usuarioCrudRepository;
 
-    public Cuenta adicionarCuenta(Cuenta cuenta){
+    public Cuenta adicionarCuenta(Usuario usuario){
 
-        String username = cuenta.getUsuario().getUserName();
+        String username = usuario.getUserName();
 
         Usuario usuarioPersistente = usuarioCrudRepository.findById(username)
         .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
 
         int numeroAleatorio = (int)(Math.random() * 10000000); 
-        String numeroFormateado = String.format("%07d", numeroAleatorio);
+        String numeroFormateado = String.format("%10d", numeroAleatorio);
 
+        Cuenta cuenta = new Cuenta();
+        cuenta.setUsuario(usuarioPersistente);
         cuenta.setUsuario(usuarioPersistente);
         cuenta.setNumeroCuenta(numeroFormateado);
 

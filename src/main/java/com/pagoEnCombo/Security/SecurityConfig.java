@@ -44,6 +44,7 @@ public class SecurityConfig {
 
                 // 🔓 públicos
                 .requestMatchers("/api/usuario/authenticate").permitAll()
+                .requestMatchers("/api/usuario/crearuser").permitAll()
                 .requestMatchers("/api/version").permitAll()
 
                 // 🔐 protegidos

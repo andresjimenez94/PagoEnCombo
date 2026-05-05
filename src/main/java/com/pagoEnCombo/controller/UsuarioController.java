@@ -35,6 +35,11 @@ public class UsuarioController {
         return usuarioRepository.getAll();
     }
 
+    @PostMapping("/consultaruser")
+    public Usuario Usuario(@RequestBody Usuario usuario) {
+        return usuarioRepository.getUserByID(usuario);
+    }
+
     @PostMapping("/authenticate")
     public ResponseEntity<Object> authenticate(@RequestBody Usuario usuario) {
         usuarioObj = new Usuario();
@@ -70,6 +75,27 @@ public class UsuarioController {
     public ResponseEntity<Object> addUser(@RequestBody Usuario usuario) {
 
         Usuario usu = usuarioRepository.adicionarUsuario(usuario);
+
+        mensajes = new Mensajes();
+        if (!usu.equals(null)) {
+            mensajes.setMensaje("Usuario Creado");
+            return new ResponseEntity<>(mensajes, HttpStatus.OK);
+        }else{
+            mensajes.setMensaje("Error Creando Usuario");
+            return new ResponseEntity<>(mensajes, HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    @PostMapping("/crearuser")
+    public ResponseEntity<Object> createUser(@RequestBody Usuario usuario) {
+
+        System.out.println("1er Nombre: " + usuario.getPrimerNombre());
+        System.out.println("2do Nombre: " + usuario.getSegundoNombre());
+        System.out.println("1er Apellido: " + usuario.getPrimerApellido());
+        System.out.println("2do Apellido: " + usuario.getSegundoApellido());
+
+        Usuario usu = usuarioRepository.adicionarUsuarioANDCuenta(usuario);
 
         mensajes = new Mensajes();
         if (!usu.equals(null)) {

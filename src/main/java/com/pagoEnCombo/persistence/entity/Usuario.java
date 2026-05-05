@@ -6,6 +6,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.CascadeType;
 
 @Entity
@@ -42,7 +46,7 @@ public class Usuario {
         return segundonombre;
     }
 
-    public void getSegundoNombre(String segundonombre) {
+    public void setSegundoNombre(String segundonombre) {
         this.segundonombre = segundonombre.toUpperCase().trim();
     }
 
@@ -68,6 +72,7 @@ public class Usuario {
         this.segundoapellido = segundoapellido.toUpperCase().trim();
     }
 
+   
     @Column(name = "password")
     private String password;
 
@@ -91,7 +96,7 @@ public class Usuario {
     }
 
     @Column(name = "activo")
-    private Boolean activo;
+    private Boolean activo = true;
 
     public Boolean getActivo() {
         return activo;
@@ -117,6 +122,7 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<Cuenta> cuenta;
 
+    @JsonIgnore
     public List<Cuenta> getCuentas() {
         return cuenta;
     }
@@ -125,6 +131,7 @@ public class Usuario {
         this.cuenta = cuentas;
     }
 
+    @JsonIgnore
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<PagoEnCombo> pagos;
 

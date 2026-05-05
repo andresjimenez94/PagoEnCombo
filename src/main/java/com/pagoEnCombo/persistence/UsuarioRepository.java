@@ -7,7 +7,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.pagoEnCombo.persistence.crud.UsuarioCrudRepository;
+import com.pagoEnCombo.persistence.CuentaRepository;
 import com.pagoEnCombo.persistence.entity.Usuario;
+import com.pagoEnCombo.persistence.entity.Cuenta;
 
 @Service
 public class UsuarioRepository {
@@ -16,6 +18,9 @@ public class UsuarioRepository {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private CuentaRepository cuentaRepository;
 
     @Autowired
     public UsuarioRepository(UsuarioCrudRepository usuarioCrudRepository) {
@@ -43,6 +48,11 @@ public class UsuarioRepository {
         }
     }
 
+    public Usuario getUserByID(Usuario usuario){
+
+        return usuarioCrudRepository.findByUserName(usuario.getUserName());
+    }
+
     public Usuario adicionarUsuario(Usuario usuario){
 
         String contraseñaEncriptada = passwordEncoder.encode(usuario.getPassword());
@@ -54,7 +64,12 @@ public class UsuarioRepository {
 
         String contraseñaEncriptada = passwordEncoder.encode(usuario.getPassword());
         usuario.setPassword(contraseñaEncriptada);
-        return usuarioCrudRepository.save(usuario);  
+        usuario.setActivo(true);
+
+        Usuario addUsuario = usuarioCrudRepository.save(usuario);
+        cuentaRepository.adicionarCuenta(usuario);
+
+        return addUsuario;  
     }
 
     public Integer actualizarUsuario(Usuario usuario){

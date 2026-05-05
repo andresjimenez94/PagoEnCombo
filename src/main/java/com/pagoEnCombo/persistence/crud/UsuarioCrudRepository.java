@@ -1,5 +1,7 @@
 package com.pagoEnCombo.persistence.crud;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +13,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UsuarioCrudRepository extends JpaRepository<Usuario,String>{
+
+    @Query("SELECT u FROM Usuario u WHERE u.userName = ?1")
+    Usuario findByUserName(String username);
 
     //No se coloca el nombre de la tabla sino el de la entidad por eso es "Usuaio" y no "usuarios"
     @Query("SELECT u FROM Usuario u WHERE u.userName = ?1 AND u.password = ?2")
