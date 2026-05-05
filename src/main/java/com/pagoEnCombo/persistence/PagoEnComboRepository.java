@@ -50,14 +50,18 @@ public class PagoEnComboRepository {
 
         System.out.println("DEBUG - URL GENERADA: " + urlApi);
 
-        //String prompt = "Analiza la imagen de esta factura. Extrae los productos, sus precios y el total. " +
-        //        "Responde estrictamente en formato JSON con la siguiente estructura: " +
-        //        "{ \"items\": [ { \"producto\": \"nombre\", \"precio\": 0.0 } ], \"montoTotal\": 0.0 }";
+        // String prompt = "Analiza la imagen de esta factura. Extrae los productos, sus
+        // precios y el total. " +
+        // "Responde estrictamente en formato JSON con la siguiente estructura: " +
+        // "{ \"items\": [ { \"producto\": \"nombre\", \"precio\": 0.0 } ],
+        // \"montoTotal\": 0.0 }";
 
         String prompt = "Analiza la imagen de esta factura. Extrae los productos, sus precios unitarios y el total. " +
                 "REGLA CRÍTICA: Si un producto tiene una cantidad mayor a 1, debes incluirlo en la lista de 'items' " +
-                "tantas veces como indique su cantidad (ejemplo: si hay 3 unidades de 'Producto A', que tenga un contador "+
-                "el cual inicia en 1 y va incrementado de 1 en 1 y un atributo check con false, el ítem debe aparecer 3 veces). " +
+                "tantas veces como indique su cantidad (ejemplo: si hay 3 unidades de 'Producto A', que tenga un contador "
+                +
+                "el cual inicia en 1 y va incrementado de 1 en 1 y un atributo check con false, el ítem debe aparecer 3 veces). "
+                +
                 "Responde estrictamente en formato JSON con la siguiente estructura: " +
                 "{ \"items\": [ { \"indice\":contador,\"producto\": \"nombre\", \"precio\": 0.0, \"check\": false } ], \"montoTotal\": 0.0 }";
 
@@ -107,9 +111,14 @@ public class PagoEnComboRepository {
         }
     }
 
-    public PagoEnComboResponse procesarYGuardar(String base64, String username) {
+    public PagoEnComboResponse procesarYGuardar(String base64, String username, String descripcion, Double monto) {
         // 1. Llamar a la IA (Lo que ya programamos con analizarConIA)
-        PagoEnComboResponse datosIA = analizarConIA(base64);
+
+        PagoEnComboResponse datosIA  = new PagoEnComboResponse();
+
+        if (base64 != null && !base64.trim().isEmpty()) {
+            datosIA = analizarConIA(base64);
+        }
 
         // 2. Buscar al Usuario en la DB
         Usuario usuario = usuarioCrudRepository.findById(username)
@@ -118,23 +127,29 @@ public class PagoEnComboRepository {
         // 3. Crear y Capturar la Entidad para MySQL
         PagoEnCombo entidad = new PagoEnCombo();
         entidad.setImagenBase64(base64);
+        entidad.setDescripcion(descripcion);
         datosIA.setId(entidad.getId());
         datosIA.setFechaProceso(entidad.getFecha());
-        try {
-            // Esto convierte el objeto en un JSON verdadero: {"monto": 175000, ...}
-            String jsonString = objectMapper.writeValueAsString(datosIA);
-            entidad.setJsonRespuesta(jsonString);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            // Maneja el error si la conversión falla
+        if (base64 != null && !base64.trim().isEmpty()) {
+            try {
+                // Esto convierte el objeto en un JSON verdadero: {"monto": 175000, ...}
+                String jsonString = objectMapper.writeValueAsString(datosIA);
+                entidad.setJsonRespuesta(jsonString);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                // Maneja el error si la conversión falla
+            }
+            entidad.setMonto(datosIA.getMontoTotal());
         }
-        entidad.setMonto(datosIA.getMontoTotal());
+
+        entidad.setMonto(monto);
+
+        datosIA.setMontoTotal(monto);
+
         entidad.setUsuario(usuario); // Aquí vinculamos el username (FK)
 
         // 4. Guardar en la tabla 'pagosencombo'
         pagoEnComboCrudRepository.save(entidad);
-
-        
 
         return datosIA;
     }

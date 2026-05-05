@@ -72,7 +72,7 @@ public class Usuario {
         this.segundoapellido = segundoapellido.toUpperCase().trim();
     }
 
-   
+    
     @Column(name = "password")
     private String password;
 

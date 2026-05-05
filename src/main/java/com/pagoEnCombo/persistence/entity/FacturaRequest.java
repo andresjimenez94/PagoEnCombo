@@ -10,7 +10,9 @@ public class FacturaRequest {
     // Atributo privado para cumplir con el encapsulamiento
     private String imagenBase64;
     private String username;
+    private String descripcion;
     private Long id;
+    private Double monto;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("fechaProceso")
@@ -35,6 +37,22 @@ public class FacturaRequest {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Double getMonto() {
+        return monto;
+    }
+
+    public void setMonto(Double monto) {
+        this.monto = monto;
     }
 
     public void setId(Long id) {

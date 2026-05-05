@@ -30,7 +30,7 @@ public class CuentaRepository {
         Cuenta cuenta = new Cuenta();
         cuenta.setUsuario(usuarioPersistente);
         cuenta.setUsuario(usuarioPersistente);
-        cuenta.setNumeroCuenta(numeroFormateado);
+        cuenta.setEstatus(1);
 
         return cuentaCrudRepository.save(cuenta);
     }

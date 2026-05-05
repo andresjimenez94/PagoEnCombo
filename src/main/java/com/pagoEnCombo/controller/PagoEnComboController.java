@@ -38,9 +38,11 @@ public class PagoEnComboController {
         // 1. Recibimos el string Base64
         String base64Data = request.getImagenBase64();
         String username = request.getUsername();
+        String descripcion = request.getDescripcion();
+        Double monto = request.getMonto();
 
         // 2. Llamamos al servicio que conecta con la IA
-        PagoEnComboResponse resultado = pagoEnComboRepository.procesarYGuardar(base64Data,username);
+        PagoEnComboResponse resultado = pagoEnComboRepository.procesarYGuardar(base64Data,username,descripcion,monto);
 
         return ResponseEntity.ok(resultado);
     }
