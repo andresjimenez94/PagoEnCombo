@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "cuentas")
 public class Cuenta {
@@ -57,6 +59,7 @@ public class Cuenta {
     // Relación con la tabla Usuarios a través de la columna username
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "username", referencedColumnName = "username")
+    @JsonIgnore
     private Usuario usuario;
 
    

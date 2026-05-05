@@ -33,6 +33,15 @@ public class CuentaRepository {
         return cuentaCrudRepository.save(cuenta);
     }
 
+    public Cuenta consultarCuentaXUsuario(String username){
+
+        Usuario usuarioPersistente = usuarioCrudRepository.findById(username)
+        .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
+
+        return cuentaCrudRepository.findByUsuario(usuarioPersistente);
+
+    }
+
     
 
 }

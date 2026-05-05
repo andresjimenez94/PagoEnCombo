@@ -10,6 +10,7 @@ import com.pagoEnCombo.persistence.CuentaRepository;
 import com.pagoEnCombo.persistence.entity.Cuenta;
 import com.pagoEnCombo.persistence.entity.Jwt;
 import com.pagoEnCombo.persistence.entity.Mensajes;
+import com.pagoEnCombo.persistence.entity.Usuario;
 
 @RestController
 @RequestMapping("/api/cuenta")
@@ -38,6 +39,21 @@ public class CuentaController {
             return new ResponseEntity<>(mensajes, HttpStatus.OK);
         }else{
             mensajes.setMensaje("Error Creando Cuenta");
+            return new ResponseEntity<>(mensajes, HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    @PostMapping("/consultarcuenta")
+    public ResponseEntity<Object> consultarCuentaByUser(@RequestBody Usuario usuario) {
+
+        Cuenta cuent = cuentaRepository.consultarCuentaXUsuario(usuario.getUserName());
+
+        mensajes = new Mensajes();
+        if (!cuent.equals(null)) {
+            return new ResponseEntity<>(cuent, HttpStatus.OK);
+        }else{
+            mensajes.setMensaje("Error consultando Cuenta");
             return new ResponseEntity<>(mensajes, HttpStatus.NOT_FOUND);
         }
 

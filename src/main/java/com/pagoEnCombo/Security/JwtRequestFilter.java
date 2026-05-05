@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.springframework.lang.NonNull;
 
+
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
@@ -27,53 +28,59 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUserDetailsService jwtUserDetailsService;
 
-
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,@NonNull FilterChain chain)
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain)
             throws ServletException, IOException {
-    
-        String authorizationHeader = request.getHeader("Authorization");
-        String jwt = null;
-        String username = null;
 
-        if (request.getRequestURI().equals("/api/usuario/authenticate") || authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            chain.doFilter(request, response); // Permite que la solicitud continúe sin validar el JWT
+        String path = request.getRequestURI();
+
+        // ✅ ENDPOINTS PÚBLICOS (SIN JWT)
+        if (
+            path.equals("/api/usuario/authenticate") ||
+            path.equals("/api/version")
+        ) {
+            chain.doFilter(request, response);
             return;
         }
-    
-        // Verifica si el encabezado "Authorization" contiene un token
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);  // Extraer el token JWT
-            username = jwtUtil.extractUsername(jwt);  // Extraer el nombre de usuario desde el token
-        }
-    
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-    
+
+        String authHeader = request.getHeader("Authorization");
+
+        // ✅ SOLO intentar autenticar si hay Bearer
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+
+            String jwt = authHeader.substring(7);
+            String username = null;
+
             try {
-                if (jwtUtil.validateToken(jwt, username)) {
-                    var userDetails = jwtUserDetailsService.loadUserByUsername(username);
-                    var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                } else {
-                    sendErrorResponse(response, "JWT token is not valid", HttpStatus.UNAUTHORIZED);
-                    return;  // Detener la ejecución si el token no es válido
-                }
+                username = jwtUtil.extractUsername(jwt);
             } catch (Exception e) {
-                sendErrorResponse(response, "Invalid JWT token: " + e.getMessage(), HttpStatus.UNAUTHORIZED);
-                return;  // Detener la ejecución si hubo un error
+                // Token inválido → no autenticar
+                // (Spring Security decidirá)
+            }
+
+            if (username != null
+                && SecurityContextHolder.getContext().getAuthentication() == null
+                && jwtUtil.validateToken(jwt, username)) {
+
+                var userDetails =
+                        jwtUserDetailsService.loadUserByUsername(username);
+
+                var authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authentication);
             }
         }
-    
-        // Continuar con el siguiente filtro o el controlador
-        chain.doFilter(request, response); 
-    }
 
-private void sendErrorResponse(HttpServletResponse response, String message, HttpStatus status) throws IOException {
-    response.setStatus(status.value());  // Establece el código de estado HTTP (401, etc.)
-    response.setContentType("application/json");  // Define el tipo de contenido como JSON
-    Map<String, String> errorResponse = new HashMap<>();
-    errorResponse.put("error", message);  // Agrega el mensaje de error en el cuerpo
-    String jsonResponse = new ObjectMapper().writeValueAsString(errorResponse);  // Convierte el mapa a JSON
-    response.getWriter().write(jsonResponse);  // Escribe el cuerpo de la respuesta
-}
+        // ✅ SIEMPRE continuar la cadena
+        chain.doFilter(request, response);
+    }
 }

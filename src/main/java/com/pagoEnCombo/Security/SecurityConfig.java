@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
@@ -32,25 +33,31 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            .cors()
-            .and()
-            .csrf().disable()
-            .authorizeHttpRequests()
-                .requestMatchers("/api/pagoencombo/procesar/**").permitAll()
+                .cors()
+                .and()
+                .csrf().disable()
+                .authorizeHttpRequests()
+
+                // 🔓 públicos
                 .requestMatchers("/api/usuario/authenticate").permitAll()
                 .requestMatchers("/api/version").permitAll()
-                .anyRequest().authenticated();
+
+                // 🔐 protegidos
+                .requestMatchers("/api/**").authenticated()
+
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-
-    
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
@@ -65,9 +72,5 @@ public class SecurityConfig {
 
         return source;
     }
-
-
-
-
 
 }
