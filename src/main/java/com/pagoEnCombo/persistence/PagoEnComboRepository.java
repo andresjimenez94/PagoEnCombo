@@ -140,11 +140,9 @@ public class PagoEnComboRepository {
                 // Maneja el error si la conversión falla
             }
             entidad.setMonto(datosIA.getMontoTotal());
+        }else{
+            entidad.setMonto(monto);
         }
-
-        entidad.setMonto(monto);
-
-        datosIA.setMontoTotal(monto);
 
         entidad.setUsuario(usuario); // Aquí vinculamos el username (FK)
 
