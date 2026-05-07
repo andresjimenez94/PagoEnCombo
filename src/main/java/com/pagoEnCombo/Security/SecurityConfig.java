@@ -46,6 +46,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/usuario/authenticate").permitAll()
                 .requestMatchers("/api/usuario/crearuser").permitAll()
                 .requestMatchers("/api/version").permitAll()
+                .requestMatchers("/api/pagoencombo/procesar").permitAll()
 
                 // 🔐 protegidos
                 .requestMatchers("/api/**").authenticated()
